@@ -33,11 +33,12 @@ class Visitante(models.Model):
 class AccessLog(models.Model):
     visitante = models.ForeignKey(Visitante, on_delete=models.CASCADE)
     registrado_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    acao = models.CharField(max_length=100)
     horario_criação = models.DateTimeField(auto_now_add=True)
     horario_entrada = models.DateTimeField(null=True, blank=True)
     horario_saida = models.DateTimeField(null=True, blank=True)
     
 def __str__(self):
-    return f"Registro de {self.visitante.nome} - {self.horario_criacao}"
+    return f"Registro de {self.visitante.nome} - {self.acao} - {self.horario_criacao}"
 
 
