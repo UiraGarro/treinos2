@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.utils import timezone
 
 class Usuario(AbstractUser):
     TIPO_USUARIO = (
@@ -37,6 +38,11 @@ class AccessLog(models.Model):
     horario_criação = models.DateTimeField(auto_now_add=True)
     horario_entrada = models.DateTimeField(null=True, blank=True)
     horario_saida = models.DateTimeField(null=True, blank=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.horario_entrada:
+            self.horario_entrada = timezone.now()
+        super().save(*args, **kwargs)
     
 def __str__(self):
     return f"Registro de {self.visitante.nome} - {self.acao} - {self.horario_criacao}"
