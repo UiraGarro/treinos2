@@ -79,7 +79,7 @@ class PolicialPresenca(models.Model):
         if not self.horario_saida:
             self.horario_saida = timezone.now()
             self.save()
-        # Registrar presença diária
+        
         hoje = timezone.now().date()
         PresencaDiaria.objects.get_or_create(policial=self.policial, data=hoje)
 
@@ -90,14 +90,14 @@ class PolicialPresenca(models.Model):
     def desertor(self):
         hoje = timezone.now().date()
         tres_dias_atras = hoje - timedelta(days=3)
-        # Verificar se há registros de presença nos últimos 3 dias
+        
         dias_presentes = PresencaDiaria.objects.filter(
             policial=self.policial,
             data__range=(tres_dias_atras, hoje)
         ).count()
-        # Se não houve presença nos últimos 3 dias, é desertor
+        
         if dias_presentes < 3:
-            # Criar solicitação de prisão
+            
             SolicitacaoPrisao.objects.get_or_create(policial=self.policial)
             return True
         return False
