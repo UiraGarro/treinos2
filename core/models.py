@@ -115,10 +115,6 @@ class Procurado(models.Model):
 
     @staticmethod
     def verificar_procurado(visitante):
-        """
-        Verifica se o visitante está na lista de procurados.
-        Retorna uma mensagem indicando o status.
-        """
         try:
             procurado = Procurado.objects.get(visitante=visitante)
             return f"Visitante {visitante.nome} é procurado. Motivo: {procurado.motivo}"
@@ -136,10 +132,6 @@ class SolicitacaoPrisao(models.Model):
 
     @staticmethod
     def registrar_solicitacao(policial, motivo="Deserção"):
-        """
-        Registra uma solicitação de prisão para o policial especificado.
-        Retorna o objeto criado ou existente.
-        """
         solicitacao, criada = SolicitacaoPrisao.objects.get_or_create(
             policial=policial,
             motivo=motivo
