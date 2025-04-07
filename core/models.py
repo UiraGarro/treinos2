@@ -65,7 +65,7 @@ class PresencaDiaria(models.Model):
     def __str__(self):
         return f"{self.policial.nome} - {self.data}"
         
-class PolicialPresença(models.Model):
+class PolicialPresenca(models.Model):
     policial = models.ForeignKey(Policial, on_delete=models.CASCADE)
     horario_entrada = models.DateTimeField(auto_now_add=True)
     horario_saida = models.DateTimeField(null=True, blank=True)
@@ -105,13 +105,46 @@ class PolicialPresença(models.Model):
     def __str__(self):
         return f"{self.policial.nome} - {self.horario_entrada} a {self.horario_saida}"
     
+class Procurado(models.Model):
+    visitante = models.OneToOneField(Visitante, on_delete=models.CASCADE)
+    motivo = models.CharField(max_length=255)
+    data_inclusao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.visitante.nome} - {self.motivo}"
+
+    @staticmethod
+    def verificar_procurado(visitante):
+        """
+        Verifica se o visitante está na lista de procurados.
+        Retorna uma mensagem indicando o status.
+        """
+        try:
+            procurado = Procurado.objects.get(visitante=visitante)
+            return f"Visitante {visitante.nome} é procurado. Motivo: {procurado.motivo}"
+        except Procurado.DoesNotExist:
+            return f"Visitante {visitante.nome} não é procurado."
+
+
 class SolicitacaoPrisao(models.Model):
-    visitante = models.ForeignKey(Visitante, on_delete=models.CASCADE)
-    motivo = models.CharField(max_length=255, default="Procurado")
-    data_solicitacao = models.DateTimeField(auto_now_add=True)
     policial = models.ForeignKey(Policial, on_delete=models.CASCADE)
     motivo = models.CharField(max_length=255, default="Deserção")
     data_solicitacao = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Solicitação de prisão para {self.policial.nome} - {self.motivo}"
+
+    @staticmethod
+    def registrar_solicitacao(policial, motivo="Deserção"):
+        """
+        Registra uma solicitação de prisão para o policial especificado.
+        Retorna o objeto criado ou existente.
+        """
+        solicitacao, criada = SolicitacaoPrisao.objects.get_or_create(
+            policial=policial,
+            motivo=motivo
+        )
+        if criada:
+            return f"Solicitação de prisão registrada para {policial.nome} - Motivo: {motivo}"
+        return f"Solicitação de prisão já existente para {policial.nome} - Motivo: {motivo}"
+    
