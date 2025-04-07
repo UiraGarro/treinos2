@@ -25,6 +25,7 @@ class PolicialViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         policial = serializer.save()
         AccessLog.objects.create(visitante=policial, acao='Criado', registrado_por=self.request.user)
+        
 class PresencaDiariaViewSet(viewsets.ModelViewSet):
     queryset = PresencaDiaria.objects.all()
     serializer_class = PresencaDiariaSerializer
@@ -32,6 +33,7 @@ class PresencaDiariaViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         presenca_diaria = serializer.save()
         AccessLog.objects.create(visitante=presenca_diaria.policial, acao='Criado', registrado_por=self.request.user)
+        
 class PolicialPresencaViewSet(viewsets.ModelViewSet):
     queryset = PolicialPresenca.objects.all()
     serializer_class = PolicialPresencaSerializer
@@ -48,6 +50,7 @@ class PolicialPresencaViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         AccessLog.objects.create(visitante=instance.policial, acao='Deletado', registrado_por=self.request.user)
         instance.delete()
+        
 class PolicialPresencaCheckInViewSet(viewsets.ModelViewSet):
     queryset = PolicialPresenca.objects.all()
     serializer_class = PolicialPresencaSerializer
